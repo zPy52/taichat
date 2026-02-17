@@ -27,7 +27,7 @@ export default function App({ version }: AppProps): React.ReactElement {
               {'>'}_
             </Text>
             <Text bold color="#22d3ee">
-              TermiChat
+              TaiChat
             </Text>
             <Text dimColor>(v{version})</Text>
           </Box>

@@ -16,7 +16,7 @@ const COMMANDS = [
 const SHORTCUTS = [
   { key: 'Enter', desc: 'Send message' },
   { key: 'Up/Down', desc: 'Navigate message history' },
-  { key: 'Ctrl+C', desc: 'Exit TermiChat' },
+  { key: 'Ctrl+C', desc: 'Exit TaiChat' },
 ];
 
 export default function HelpDisplay({ onDismiss }: HelpDisplayProps): React.ReactElement {
@@ -34,7 +34,7 @@ export default function HelpDisplay({ onDismiss }: HelpDisplayProps): React.Reac
       marginY={1}
     >
       <Box marginBottom={1}>
-        <Text bold color={COLORS.accent}>TermiChat Help</Text>
+        <Text bold color={COLORS.accent}>TaiChat Help</Text>
       </Box>
 
       <Box flexDirection="column" marginBottom={1}>

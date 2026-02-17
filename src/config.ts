@@ -14,7 +14,7 @@ export interface AppConfig {
   };
 }
 
-const CONFIG_DIR = path.join(os.homedir(), '.termichat');
+const CONFIG_DIR = path.join(os.homedir(), '.taichat');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 const DEFAULT_CONFIG: AppConfig = {

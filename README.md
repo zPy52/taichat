@@ -1,17 +1,17 @@
-# TermiChat
+# TaiChat
 
 Multi-provider AI chat agent for your terminal. Talk to OpenAI, Anthropic, DeepSeek, DeepInfra, Kimi and more — with local tool calling and permission prompts.
 
 ## Install
 
 ```bash
-npm install -g termichat
+npm install -g taichat
 ```
 
 ## Usage
 
 ```bash
-termichat
+taichat
 # or
 chat
 ```
@@ -27,7 +27,7 @@ chat
 
 ## Configuration
 
-On first run, TermiChat will prompt you to enter API keys. Config is stored at `~/.termichat/config.json`.
+On first run, TaiChat will prompt you to enter API keys. Config is stored at `~/.taichat/config.json`.
 
 You can also set API keys via environment variables:
 

@@ -1,10 +1,10 @@
 {
-  "name": "termichat",
+  "name": "taichat",
   "version": "0.1.1",
   "description": "Multi-provider AI chat agent for your terminal",
   "type": "module",
   "bin": {
-    "termichat": "dist/cli.js",
+    "taichat": "dist/cli.js",
     "chat": "dist/cli.js"
   },
   "files": [

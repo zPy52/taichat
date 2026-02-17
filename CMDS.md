@@ -1,8 +1,8 @@
-# TermiChat — Walkthrough & Commands
+# TaiChat — Walkthrough & Commands
 
 ## Codebase walkthrough
 
-**TermiChat** is a multi-provider AI chat CLI that runs in the terminal. It’s an npm package that builds to a single ESM bundle and exposes two bin names: `termichat` and `chat`.
+**TaiChat** is a multi-provider AI chat CLI that runs in the terminal. It’s an npm package that builds to a single ESM bundle and exposes two bin names: `taichat` and `chat`.
 
 ### Layout
 
@@ -12,7 +12,7 @@
 | `src/app.tsx` | Root UI: shows config setup when no API keys exist, otherwise `<TerminalChat>`. |
 | `src/agent.ts` | AI loop: `streamText` from Vercel AI SDK, handles tool calls, approval for dangerous tools, and message history. |
 | `src/providers.ts` | Model list and `resolveModel()` for OpenAI, Anthropic, DeepSeek, DeepInfra, Kimi (OpenAI-compatible). |
-| `src/config.ts` | Load/save config at `~/.termichat/config.json`; API keys can also come from env vars. |
+| `src/config.ts` | Load/save config at `~/.taichat/config.json`; API keys can also come from env vars. |
 | `src/tools/` | Tools: `file-tools`, `shell-tool`, `web-search`; aggregated in `index.ts` with safe vs dangerous sets. |
 | `src/components/` | Ink UI: header, chat input, message history, model selector, tool-call review, help, config setup. |
 | `tsup.config.ts` | Single ESM bundle from `src/cli.tsx` → `dist/cli.js`, with node shebang and `require` shim for CJS deps. |
@@ -21,7 +21,7 @@
 
 - **Entry:** `src/cli.tsx` (tsup).
 - **Output:** `dist/cli.js` (and source map). `package.json` has `"files": ["dist"]`, so only `dist/` is published.
-- **Bins:** `termichat` and `chat` both point to `./dist/cli.js`. `prepublishOnly` runs `npm run build`.
+- **Bins:** `taichat` and `chat` both point to `./dist/cli.js`. `prepublishOnly` runs `npm run build`.
 
 ---
 
@@ -62,13 +62,13 @@ npm publish --tag beta
 ### Install (global CLI)
 
 ```bash
-npm install -g termichat
+npm install -g taichat
 ```
 
 ### Run
 
 ```bash
-termichat
+taichat
 ```
 
 or use the alias:
@@ -79,7 +79,7 @@ chat
 
 ### First run
 
-On first run you’ll be asked to set up API keys. Config is stored at `~/.termichat/config.json`. You can also set keys via env:
+On first run you’ll be asked to set up API keys. Config is stored at `~/.taichat/config.json`. You can also set keys via env:
 
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
@@ -98,20 +98,20 @@ On first run you’ll be asked to set up API keys. Config is stored at `~/.termi
 ### CLI flags
 
 ```bash
-termichat --help    # or -h
-termichat --version # or -v
+taichat --help    # or -h
+taichat --version # or -v
 ```
 
 ### Install a specific version (e.g. beta)
 
 ```bash
-npm install -g termichat@beta
+npm install -g taichat@beta
 # or
-npm install -g termichat@0.1.0
+npm install -g taichat@0.1.0
 ```
 
 ### Run without installing (npx)
 
 ```bash
-npx termichat
+npx taichat
 ```

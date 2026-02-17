@@ -37,7 +37,7 @@ export default function ChatMessage({ message }: ChatMessageProps): React.ReactE
         <Box flexDirection="column" marginY={0}>
           <Box gap={1}>
             <Text bold color={COLORS.assistantLabel}>{'●'}</Text>
-            <Text bold color={COLORS.assistantLabel}>TermiChat</Text>
+            <Text bold color={COLORS.assistantLabel}>TaiChat</Text>
           </Box>
           <Box marginLeft={2} flexDirection="column">
             <Text>{renderMarkdown(message.content)}</Text>

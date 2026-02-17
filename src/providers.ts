@@ -49,7 +49,7 @@ export function resolveModel(modelId: string, config: AppConfig): LanguageModelV
   const apiKey = getApiKey(providerName, config);
 
   if (!apiKey) {
-    throw new Error(`No API key configured for provider "${providerName}". Run termichat and use /config to set it up.`);
+    throw new Error(`No API key configured for provider "${providerName}". Run taichat and use /config to set it up.`);
   }
 
   switch (providerName) {

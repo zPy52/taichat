@@ -8,13 +8,13 @@ const args = process.argv.slice(2);
 
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
-  TermiChat v${VERSION}
+  TaiChat v${VERSION}
   Multi-provider AI chat agent for your terminal.
 
   Usage:
-    termichat              Start interactive chat
-    termichat --help       Show this help message
-    termichat --version    Show version
+    taichat              Start interactive chat
+    taichat --help       Show this help message
+    taichat --version    Show version
 
   Slash Commands (inside chat):
     /model     Switch the active AI model

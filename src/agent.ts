@@ -23,7 +23,7 @@ export interface AgentCallbacks {
   requestToolApproval: (toolCall: PendingToolCall) => Promise<ToolApprovalStatus>;
 }
 
-const SYSTEM_PROMPT = `You are TermiChat, a helpful AI assistant running in the user's terminal. You have access to local tools for file operations, shell commands, and web search.
+const SYSTEM_PROMPT = `You are TaiChat, a helpful AI assistant running in the user's terminal. You have access to local tools for file operations, shell commands, and web search.
 
 Important guidelines:
 - When you need to manipulate files, ALWAYS prefer using the dedicated file tools (read_file, write_file, remove_file, list_directory) over shell commands.

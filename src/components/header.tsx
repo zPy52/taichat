@@ -24,7 +24,7 @@ export default function Header({ modelId, version }: HeaderProps): React.ReactEl
           {'>'}_
         </Text>
         <Text bold color={COLORS.accent}>
-          TermiChat
+          TaiChat
         </Text>
         <Text dimColor>
           (v{version})
