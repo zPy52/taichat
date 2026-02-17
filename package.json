@@ -29,7 +29,7 @@
     "llm",
     "agent"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.0",
     "@ai-sdk/deepinfra": "^2.0.0",

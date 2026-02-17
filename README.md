@@ -47,4 +47,4 @@ You can also set API keys via environment variables:
 
 ## License
 
-MIT
+Apache-2.0
