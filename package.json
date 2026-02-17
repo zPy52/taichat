@@ -4,8 +4,8 @@
   "description": "Multi-provider AI chat agent for your terminal",
   "type": "module",
   "bin": {
-    "termichat": "./dist/cli.js",
-    "chat": "./dist/cli.js"
+    "termichat": "dist/cli.js",
+    "chat": "dist/cli.js"
   },
   "files": [
     "dist"
