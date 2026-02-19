@@ -1,20 +1,26 @@
-import { readFile, writeFile, removeFile, listDirectory } from '@/tools/file-tools';
-import { executeCommand } from '@/tools/shell-tool';
-import { searchWeb } from '@/tools/web-search';
+import { SubmoduleToolsWeb } from '@/tools/web-search';
+import { SubmoduleToolsShell } from '@/tools/shell-tool';
+import { SubmoduleToolsFiles } from '@/tools/file-tools';
 
-export const allTools = {
-  read_file: readFile,
-  write_file: writeFile,
-  remove_file: removeFile,
-  list_directory: listDirectory,
-  execute_command: executeCommand,
-  search_web: searchWeb,
-};
+export class Tools {
+  public static readonly web = new SubmoduleToolsWeb();
+  public static readonly files = new SubmoduleToolsFiles();
+  public static readonly shell = new SubmoduleToolsShell();
 
-export const SAFE_TOOLS = new Set(['read_file', 'list_directory', 'search_web']);
+  private static readonly DANGEROUS_TOOLS = new Set(['write_file', 'remove_file', 'execute_command']);
 
-export const DANGEROUS_TOOLS = new Set(['write_file', 'remove_file', 'execute_command']);
+  public static allTools() {
+    return {
+      read_file: Tools.files.read(),
+      write_file: Tools.files.write(),
+      remove_file: Tools.files.remove(),
+      list_directory: Tools.files.list(),
+      execute_command: Tools.shell.execute(),
+      search_web: Tools.web.search(),
+    };
+  }
 
-export function isDangerousTool(toolName: string): boolean {
-  return DANGEROUS_TOOLS.has(toolName);
+  public static isDangerous(toolName: string): boolean {
+    return Tools.DANGEROUS_TOOLS.has(toolName);
+  }
 }

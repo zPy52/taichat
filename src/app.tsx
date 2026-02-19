@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import TerminalChat from '@/components/terminal-chat';
+import { useGet } from 'getrx';
+import React from 'react';
 import ConfigSetup from '@/components/config-setup';
-import { loadConfig, saveConfig, hasAnyApiKey, type AppConfig } from '@/config';
+import TerminalChat from '@/components/terminal-chat';
+import { ConfigController } from '@/controllers/config';
 
 interface AppProps {
   version: string;
 }
 
 export default function App({ version }: AppProps): React.ReactElement {
-  const [config, setConfig] = useState<AppConfig>(loadConfig);
-  const [needsSetup, setNeedsSetup] = useState(!hasAnyApiKey(config));
+  const configController = useGet(ConfigController);
+  const config = configController.config.use()!;
+  const needsSetup = configController.needsSetup.use();
 
   if (needsSetup) {
     return (
@@ -38,9 +40,7 @@ export default function App({ version }: AppProps): React.ReactElement {
         <ConfigSetup
           config={config}
           onComplete={(newConfig) => {
-            saveConfig(newConfig);
-            setConfig(newConfig);
-            setNeedsSetup(false);
+            configController.saveConfig(newConfig);
           }}
         />
       </Box>

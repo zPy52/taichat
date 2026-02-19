@@ -1,32 +1,38 @@
 import { marked } from 'marked';
 // @ts-expect-error marked-terminal has no type declarations
-import TerminalRenderer from 'marked-terminal';
+import { markedTerminal } from 'marked-terminal';
 
-let rendererConfigured = false;
+const ANSI_BOLD_OPEN = '\u001b[1m';
+const ANSI_BOLD_CLOSE = '\u001b[22m';
 
-function ensureRenderer(): void {
-  if (!rendererConfigured) {
-    marked.setOptions({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      renderer: new TerminalRenderer({
-        reflowText: true,
-        width: Math.min(process.stdout.columns || 80, 100),
-        tab: 2,
-      }),
-    });
-    rendererConfigured = true;
-  }
+marked.use(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  markedTerminal({
+    showSectionPrefix: false,
+    reflowText: true,
+    width: Math.min(process.stdout.columns || 80, 100),
+    tab: 2,
+  }),
+);
+
+function cleanupResidualMarkdown(text: string): string {
+  return text
+    .replace(/^\s*[*+-]\s*$/gm, '')
+    .replace(/^(\s*)[*+-]\s+/gm, '$1• ')
+    .replace(/\*\*([^*]+)\*\*/g, `${ANSI_BOLD_OPEN}$1${ANSI_BOLD_CLOSE}`)
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trimEnd();
 }
 
 export function renderMarkdown(text: string): string {
-  ensureRenderer();
   try {
     const rendered = marked.parse(text);
     if (typeof rendered === 'string') {
-      return rendered.trimEnd();
+      return cleanupResidualMarkdown(rendered);
     }
-    return text;
+    return cleanupResidualMarkdown(text);
   } catch {
-    return text;
+    return cleanupResidualMarkdown(text);
   }
 }
