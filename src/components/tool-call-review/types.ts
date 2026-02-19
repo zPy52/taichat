@@ -1,4 +1,4 @@
-import type { PendingToolCall } from '@/services/agent';
+import type { PendingToolCall } from '@/services/chat-server';
 
 export type ReviewDecision = 'approved' | 'denied';
 

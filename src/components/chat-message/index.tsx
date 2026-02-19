@@ -1,14 +1,15 @@
 import React from 'react';
 import { Text } from 'ink';
-import { AssistantMessage } from '@/components/chat-message/assistant-message';
-import { ToolCallMessage } from '@/components/chat-message/tool-call-message';
-import { ToolResultMessage } from '@/components/chat-message/tool-result-message';
-import type { ChatMessageProps } from '@/components/chat-message/types';
+import { Tools } from '@/tools';
 import { UserMessage } from '@/components/chat-message/user-message';
+import type { ChatMessageProps } from '@/components/chat-message/types';
+import { ToolCallMessage } from '@/components/chat-message/tool-call-message';
+import { AssistantMessage } from '@/components/chat-message/assistant-message';
+import { ToolResultMessage } from '@/components/chat-message/tool-result-message';
 
 export type { ChatMessageData, MessageRole } from '@/components/chat-message/types';
 
-export default function ChatMessage({ message }: ChatMessageProps): React.ReactElement {
+function ChatMessageComponent({ message }: ChatMessageProps): React.ReactElement {
   switch (message.role) {
     case 'user':
       return <UserMessage content={message.content} />;
@@ -22,3 +23,17 @@ export default function ChatMessage({ message }: ChatMessageProps): React.ReactE
       return <Text>{message.content}</Text>;
   }
 }
+
+const ChatMessage = React.memo(
+  ChatMessageComponent,
+  (prevProps, nextProps) =>
+    prevProps.message.id === nextProps.message.id &&
+    prevProps.message.role === nextProps.message.role &&
+    prevProps.message.content === nextProps.message.content &&
+    prevProps.message.toolName === nextProps.message.toolName &&
+    Tools.utils.hasSameArgs(prevProps.message.toolArgs, nextProps.message.toolArgs),
+);
+
+ChatMessage.displayName = 'ChatMessage';
+
+export default ChatMessage;

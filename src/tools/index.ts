@@ -1,3 +1,4 @@
+import { SubmoduleToolsUtils } from '@/tools/utils';
 import { SubmoduleToolsWeb } from '@/tools/web-search';
 import { SubmoduleToolsShell } from '@/tools/shell-tool';
 import { SubmoduleToolsFiles } from '@/tools/file-tools';
@@ -6,6 +7,7 @@ export class Tools {
   public static readonly web = new SubmoduleToolsWeb();
   public static readonly files = new SubmoduleToolsFiles();
   public static readonly shell = new SubmoduleToolsShell();
+  public static readonly utils = new SubmoduleToolsUtils();
 
   private static readonly DANGEROUS_TOOLS = new Set(['write_file', 'remove_file', 'execute_command']);
 

@@ -1,10 +1,11 @@
 import { useGet } from 'getrx';
 import { Box, useApp } from 'ink';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import Header from '@/components/header';
 import ChatInput from '@/components/chat-input';
 import { ChatController } from '@/controllers/chat';
-import ChatMessage from '@/components/chat-message';
 import ConfigSetup from '@/components/config-setup';
 import HelpDisplay from '@/components/help-display';
 import ModelSelector from '@/components/model-selector';
@@ -14,27 +15,60 @@ import ThinkingStream from '@/components/thinking-stream';
 import ToolCallReview from '@/components/tool-call-review';
 import type { TerminalChatProps } from '@/components/terminal-chat/types';
 
-export default function TerminalChat({ config, version }: TerminalChatProps): React.ReactElement {
+export default function TerminalChat({
+  config,
+  version,
+  port,
+  token,
+}: TerminalChatProps): React.ReactElement {
   const chatController = useGet(ChatController);
   const { exit } = useApp();
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `http://127.0.0.1:${port}/api/chat`,
+        headers: {
+          'X-Chat-Token': token,
+        },
+      }),
+    [port, token],
+  );
+  const { messages, sendMessage, setMessages, status } = useChat({
+    transport,
+  });
 
   useEffect(() => {
     chatController.setExitFn(exit);
   }, [chatController, exit]);
 
   const modelId = config.defaultModel;
-  const displayMessages = chatController.messages.use();
-  const loading = chatController.ui.loading.use();
-  const streamingText = chatController.ui.streamingText.use();
-  const streamingReasoning = chatController.ui.streamingReasoning.use();
-  const reasoningVisible = chatController.ui.reasoningVisible.use();
+  const displayMessages = useMemo(
+    () => chatController.messages.toDisplayMessages(messages),
+    [chatController, messages],
+  );
+  const loading = status === 'submitted' || status === 'streaming';
+  const isSubmitting = status === 'submitted';
+  const streamingReasoning = chatController.messages.getStreamingReasoning(messages);
+  const reasoningVisible = !!streamingReasoning;
   const pendingToolCall = chatController.toolApproval.pendingToolCall.use();
   const overlay = chatController.ui.overlay.use();
-  const inputHistory = displayMessages
-    .filter((m) => m.role === 'user')
-    .map((m) => m.content)
-    .reverse();
-  const isInputActive = chatController.isInputActive;
+  const inputHistory = useMemo(
+    () =>
+      displayMessages
+        .filter((m) => m.role === 'user')
+        .map((m) => m.content)
+        .reverse(),
+    [displayMessages],
+  );
+  const isInputActive = !loading && !pendingToolCall && overlay === 'none';
+
+  useEffect(() => {
+    chatController.messages.bindSetMessages(setMessages);
+  }, [chatController, setMessages]);
+
+  useEffect(() => {
+    chatController.messages.sync(messages);
+  }, [chatController, messages]);
 
   return (
     <Box flexDirection="column" width="100%">
@@ -42,17 +76,9 @@ export default function TerminalChat({ config, version }: TerminalChatProps): Re
 
       <MessageHistory messages={displayMessages} />
 
-      {loading && reasoningVisible && streamingReasoning && (
-        <ThinkingStream content={streamingReasoning} />
-      )}
+      {loading && reasoningVisible && <ThinkingStream content={streamingReasoning} />}
 
-      {loading && streamingText && (
-        <Box flexDirection="column" marginBottom={1}>
-          <ChatMessage message={{ id: 'streaming', role: 'assistant', content: streamingText }} />
-        </Box>
-      )}
-
-      {loading && !streamingText && !pendingToolCall && <SpinnerMessage />}
+      {isSubmitting && !pendingToolCall && <SpinnerMessage />}
 
       {pendingToolCall && (
         <ToolCallReview
@@ -80,7 +106,9 @@ export default function TerminalChat({ config, version }: TerminalChatProps): Re
       )}
 
       <ChatInput
-        onSubmit={(text) => chatController.messages.submit({ content: text })}
+        onSubmit={(text) => {
+          void sendMessage({ text });
+        }}
         onSlashCommand={(command) => chatController.processSlashCommand(command)}
         isActive={isInputActive}
         history={inputHistory}

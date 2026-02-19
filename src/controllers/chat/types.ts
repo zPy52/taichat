@@ -1,4 +1,4 @@
-import type { ToolApprovalStatus } from '@/services/agent';
+import type { ToolApprovalStatus } from '@/services/chat-server';
 
 export type OverlayMode = 'none' | 'model-selector' | 'help' | 'config-setup';
 

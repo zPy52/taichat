@@ -1,218 +1,47 @@
-import { Tools } from '@/tools';
-import { Obs, Get } from 'getrx';
-import { AgentService } from '@/services/agent';
-import { ConfigController } from '@/controllers/config';
-import { ChatController } from '@/controllers/chat/controller';
 import type { ChatMessageData } from '@/components/chat-message';
-import { convertToModelMessages, generateId, type UIMessage } from 'ai';
+import { generateId, type UIMessage } from 'ai';
 
+type ReasoningPart = Extract<UIMessage['parts'][number], { type: 'reasoning' }>;
 type DynamicToolPart = Extract<UIMessage['parts'][number], { type: 'dynamic-tool' }>;
+type SetMessagesFn = (messages: UIMessage[] | ((messages: UIMessage[]) => UIMessage[])) => void;
 
 export class SubmoduleChatControllerMessages {
-  private messages = new Obs<UIMessage[]>([]);
-
-  private add(message: UIMessage | Omit<UIMessage, 'id'>): void {
-    this.messages.value = [
-      ...this.messages.value!,
-      'id' in message ? message : { ...message, id: generateId() },
-    ];
-  }
-
-  public use(): ChatMessageData[] {
-    const messages = this.messages.use() ?? [];
-    return this.toDisplayMessages(messages);
-  }
+  private messages: UIMessage[] = [];
+  private setMessages: SetMessagesFn | null = null;
 
   public clear(): void {
-    this.messages.value = [];
+    this.messages = [];
+    if (this.setMessages) {
+      this.setMessages([]);
+    }
+  }
+
+  public bindSetMessages(setMessages: SetMessagesFn): void {
+    this.setMessages = setMessages;
+  }
+
+  public sync(messages: UIMessage[]): void {
+    this.messages = messages;
   }
 
   public getDisplayMessages(): ChatMessageData[] {
-    return this.toDisplayMessages(this.messages.value ?? []);
+    return this.toDisplayMessages(this.messages);
   }
 
   public addAssistant(content: string): void {
-    this.add({
+    const assistantMessage: UIMessage = {
+      id: generateId(),
       role: 'assistant',
       parts: [{ type: 'text', text: content }],
-    });
-  }
-
-  public async submit({ content }: { content: string }): Promise<void> {
-    const chat = Get.find(ChatController)!;
-    if (chat.ui.loading.value) {
-      return;
-    }
-
-    this.add({
-      role: 'user',
-      parts: [{ type: 'text', text: content }],
-    });
-
-    const configController = Get.find(ConfigController)!;
-    const config = configController.config.value!;
-    const modelId = configController.modelId.value!;
-
-    const exaApiKey = ConfigController.apiKeys.get('exa', config);
-    if (exaApiKey) {
-      process.env.EXA_API_KEY = exaApiKey;
-    }
-
-    const abortController = new AbortController();
-
-    try {
-      const modelMessages = await convertToModelMessages(
-        this.messages.value!.map(({ id: _id, ...message }) => message),
-        {
-          tools: Tools.allTools(),
-          ignoreIncompleteToolCalls: true,
-        },
-      );
-
-      this.prepareStreamingState();
-
-      await AgentService.run(
-        modelMessages,
-        modelId,
-        config,
-        {
-          onTextDelta: (delta) => {
-            chat.ui.streamingText.value = chat.ui.streamingText.value + delta;
-          },
-          onReasoningStart: () => {
-            chat.ui.reasoningVisible.value = true;
-            chat.ui.streamingReasoning.value = '';
-          },
-          onReasoningDelta: (delta) => {
-            if (chat.ui.reasoningVisible.value) {
-              chat.ui.streamingReasoning.value = chat.ui.streamingReasoning.value + delta;
-            }
-          },
-          onReasoningEnd: () => {
-            this.resetReasoningState();
-          },
-          onToolCall: (toolCall) => {
-            chat.ui.flush();
-            this.resetReasoningState();
-            this.add({
-              role: 'assistant',
-              parts: [
-                {
-                  type: 'dynamic-tool',
-                  toolCallId: toolCall.toolCallId,
-                  toolName: toolCall.toolName,
-                  state: 'input-available',
-                  input: toolCall.args,
-                },
-              ],
-            });
-          },
-          onToolResult: (toolCallId, toolName, result) => {
-            this.setToolCallResult(toolCallId, toolName, result);
-            chat.toolApproval.pendingToolCall.value = null;
-          },
-          onFinish: () => {
-            this.finishStreaming();
-          },
-          onError: (error) => {
-            this.finishStreaming();
-            this.addAssistant(`Error: ${error.message}`);
-          },
-          requestToolApproval: (toolCall) => chat.toolApproval.request(toolCall),
-        },
-        abortController.signal,
-      );
-    } catch (error) {
-      if (!abortController.signal.aborted) {
-        this.finishStreaming();
-        this.addAssistant(`Error: ${error instanceof Error ? error.message : String(error)}`);
-      }
-      Get.find(ChatController)!.ui.loading.value = false;
-    }
-  }
-
-  private prepareStreamingState(): void {
-    const chat = Get.find(ChatController)!;
-    chat.ui.streamingText.value = '';
-    chat.ui.loading.value = true;
-    this.resetReasoningState();
-  }
-
-  private resetReasoningState(): void {
-    const chat = Get.find(ChatController)!;
-    chat.ui.streamingReasoning.value = '';
-    chat.ui.reasoningVisible.value = false;
-  }
-
-  private finishStreaming(): void {
-    const chat = Get.find(ChatController)!;
-    chat.ui.flush();
-    this.resetReasoningState();
-    chat.ui.loading.value = false;
-  }
-
-  private setToolCallResult(toolCallId: string, toolName: string, result: unknown): void {
-    const messages = [...this.messages.value!];
-    const messageIndex = messages.findIndex(
-      (message) =>
-        message.role === 'assistant' &&
-        message.parts.some(
-          (part) =>
-            part.type === 'dynamic-tool' &&
-            part.toolCallId === toolCallId &&
-            (part.state === 'input-available' || part.state === 'approval-responded'),
-        ),
-    );
-
-    if (messageIndex === -1) {
-      this.add({
-        role: 'assistant',
-        parts: [
-          {
-            type: 'dynamic-tool',
-            toolCallId,
-            toolName,
-            state: 'output-available',
-            input: {},
-            output: result,
-          },
-        ],
-      });
-      return;
-    }
-
-    const nextParts = messages[messageIndex]!.parts.map((part) => {
-      if (!this.isToolLikePart(part)) {
-        return part;
-      }
-
-      if (
-        part.type !== 'dynamic-tool' ||
-        part.toolCallId !== toolCallId ||
-        (part.state !== 'input-available' && part.state !== 'approval-responded')
-      ) {
-        return part;
-      }
-
-      return {
-        type: 'dynamic-tool' as const,
-        toolName: part.toolName,
-        toolCallId: part.toolCallId,
-        state: 'output-available' as const,
-        input: part.input,
-        output: result,
-      };
-    });
-
-    messages[messageIndex] = {
-      ...messages[messageIndex]!,
-      parts: nextParts,
     };
 
-    this.messages.value = messages;
+    this.messages = [...this.messages, assistantMessage];
+    if (this.setMessages) {
+      this.setMessages((messages) => [...messages, assistantMessage]);
+    }
   }
 
-  private toDisplayMessages(messages: UIMessage[]): ChatMessageData[] {
+  public toDisplayMessages(messages: UIMessage[]): ChatMessageData[] {
     const displayMessages: ChatMessageData[] = [];
 
     for (const message of messages) {
@@ -278,7 +107,25 @@ export class SubmoduleChatControllerMessages {
     return displayMessages;
   }
 
+  public getStreamingReasoning(messages: UIMessage[]): string {
+    const latestAssistantMessage = [...messages]
+      .reverse()
+      .find((message) => message.role === 'assistant');
+    if (!latestAssistantMessage) {
+      return '';
+    }
+
+    return latestAssistantMessage.parts
+      .filter((part): part is ReasoningPart => this.isReasoningPart(part))
+      .map((part) => part.text)
+      .join('');
+  }
+
   private isToolLikePart(part: UIMessage['parts'][number]): part is DynamicToolPart {
     return part.type === 'dynamic-tool';
+  }
+
+  private isReasoningPart(part: UIMessage['parts'][number]): part is ReasoningPart {
+    return part.type === 'reasoning';
   }
 }

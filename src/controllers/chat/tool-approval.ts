@@ -1,7 +1,7 @@
 import { Obs } from 'getrx';
 import type { ApprovalResolver } from '@/controllers/chat/types';
 import type { ReviewDecision } from '@/components/tool-call-review';
-import type { PendingToolCall, ToolApprovalStatus } from '@/services/agent';
+import type { PendingToolCall, ToolApprovalStatus } from '@/services/chat-server';
 
 export class SubmoduleChatControllerToolApproval {
   public pendingToolCall = new Obs<PendingToolCall | null>(null);

@@ -1,5 +1,6 @@
 import App from '@/app';
 import { render } from 'ink';
+import { ChatServerService } from '@/services/chat-server';
 
 const VERSION = '0.1.4';
 
@@ -35,7 +36,13 @@ if (args.includes('--version') || args.includes('-v')) {
   process.exit(0);
 }
 
-const { waitUntilExit } = render(<App version={VERSION} />);
-waitUntilExit()
+async function main(): Promise<void> {
+  const { port, token } = await ChatServerService.start();
+  const { waitUntilExit } = render(<App version={VERSION} port={port} token={token} />);
+
+  await waitUntilExit();
+}
+
+main()
   .then(() => process.exit(0))
   .catch(() => process.exit(1));

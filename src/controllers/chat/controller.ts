@@ -17,11 +17,7 @@ export class ChatController extends GetRxController {
   }
 
   public get isInputActive(): boolean {
-    return (
-      !this.ui.loading.value &&
-      !this.toolApproval.pendingToolCall.value &&
-      this.ui.overlay.value === 'none'
-    );
+    return !this.toolApproval.pendingToolCall.value && this.ui.overlay.value === 'none';
   }
 
   public switchModel(newModelId: string): void {
@@ -42,10 +38,7 @@ export class ChatController extends GetRxController {
         this.ui.overlay.value = 'model-selector';
         break;
       case '/clear':
-        this.ui.streamingText.value = '';
         this.messages.clear();
-        this.ui.streamingReasoning.value = '';
-        this.ui.reasoningVisible.value = false;
         break;
       case '/config':
         this.ui.overlay.value = 'config-setup';

@@ -1,15 +1,17 @@
-import { Box, Text } from 'ink';
-import { useGet } from 'getrx';
 import React from 'react';
+import { useGet } from 'getrx';
+import { Box, Text } from 'ink';
 import ConfigSetup from '@/components/config-setup';
 import TerminalChat from '@/components/terminal-chat';
 import { ConfigController } from '@/controllers/config';
 
 interface AppProps {
   version: string;
+  port: number;
+  token: string;
 }
 
-export default function App({ version }: AppProps): React.ReactElement {
+export default function App({ version, port, token }: AppProps): React.ReactElement {
   const configController = useGet(ConfigController);
   const config = configController.config.use()!;
   const needsSetup = configController.needsSetup.use();
@@ -47,5 +49,5 @@ export default function App({ version }: AppProps): React.ReactElement {
     );
   }
 
-  return <TerminalChat config={config} version={version} />;
+  return <TerminalChat config={config} version={version} port={port} token={token} />;
 }
