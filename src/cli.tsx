@@ -35,4 +35,7 @@ if (args.includes('--version') || args.includes('-v')) {
   process.exit(0);
 }
 
-render(<App version={VERSION} />);
+const { waitUntilExit } = render(<App version={VERSION} />);
+waitUntilExit()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));
