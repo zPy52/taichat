@@ -29,6 +29,21 @@ export class SubmoduleToolsFiles {
         filePath: z.string().describe('Absolute or relative path to write to'),
         content: z.string().describe('The content to write to the file'),
       }),
+      execute: async ({ filePath, content }) => {
+        const resolved = path.resolve(filePath);
+        const parentDir = path.dirname(resolved);
+
+        if (!fs.existsSync(parentDir)) {
+          fs.mkdirSync(parentDir, { recursive: true });
+        }
+
+        fs.writeFileSync(resolved, content, 'utf-8');
+
+        return {
+          path: resolved,
+          bytesWritten: Buffer.byteLength(content, 'utf-8'),
+        };
+      },
     });
   }
 
@@ -38,6 +53,18 @@ export class SubmoduleToolsFiles {
       inputSchema: z.object({
         filePath: z.string().describe('Absolute or relative path to the file to delete'),
       }),
+      execute: async ({ filePath }) => {
+        const resolved = path.resolve(filePath);
+        if (!fs.existsSync(resolved)) {
+          return { error: `File not found: ${resolved}` };
+        }
+        if (fs.statSync(resolved).isDirectory()) {
+          return { error: `Path is a directory, not a file: ${resolved}` };
+        }
+
+        fs.unlinkSync(resolved);
+        return { path: resolved, removed: true };
+      },
     });
   }
 

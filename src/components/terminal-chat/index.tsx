@@ -48,6 +48,7 @@ export default function TerminalChat({
   );
   const loading = status === 'submitted' || status === 'streaming';
   const isSubmitting = status === 'submitted';
+  const isStreaming = status === 'streaming';
   const streamingReasoning = chatController.messages.getStreamingReasoning(messages);
   const reasoningVisible = !!streamingReasoning;
   const pendingToolCall = chatController.toolApproval.pendingToolCall.use();
@@ -78,7 +79,11 @@ export default function TerminalChat({
 
       {loading && reasoningVisible && <ThinkingStream content={streamingReasoning} />}
 
-      {isSubmitting && !pendingToolCall && <SpinnerMessage />}
+      {isSubmitting && !pendingToolCall && <SpinnerMessage text="Sending..." />}
+
+      {isStreaming && !pendingToolCall && !reasoningVisible && (
+        <SpinnerMessage text="Running tool calls..." />
+      )}
 
       {pendingToolCall && (
         <ToolCallReview

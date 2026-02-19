@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGet } from 'getrx';
 import { Box, Text } from 'ink';
+import { Const } from '@/const';
 import ConfigSetup from '@/components/config-setup';
 import TerminalChat from '@/components/terminal-chat';
 import { ConfigController } from '@/controllers/config';
@@ -22,15 +23,15 @@ export default function App({ version, port, token }: AppProps): React.ReactElem
         <Box
           flexDirection="column"
           borderStyle="bold"
-          borderColor="#22d3ee"
+          borderColor={Const.colors.accent}
           paddingX={1}
           marginBottom={1}
         >
           <Box gap={1}>
-            <Text bold color="#22d3ee">
+            <Text bold color={Const.colors.accent}>
               {'>'}_
             </Text>
-            <Text bold color="#22d3ee">
+            <Text bold color={Const.colors.accent}>
               TaiChat
             </Text>
             <Text dimColor>(v{version})</Text>

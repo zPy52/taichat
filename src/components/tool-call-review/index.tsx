@@ -54,6 +54,9 @@ export default function ToolCallReview({
       <Box marginLeft={2}>
         <Text>Allow this action?</Text>
       </Box>
+      <Box marginLeft={2}>
+        <Text dimColor>Approve here with Enter (not in chat input).</Text>
+      </Box>
 
       <Box marginLeft={2}>
         <Select
