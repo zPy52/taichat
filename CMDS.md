@@ -102,12 +102,12 @@ taichat --help    # or -h
 taichat --version # or -v
 ```
 
-### Install a specific version (e.g. beta)
+### Install a specific version
 
 ```bash
-npm install -g taichat@beta
+npm install -g taichat
 # or
-npm install -g taichat@0.1.0
+npm install -g taichat@latest
 ```
 
 ### Run without installing (npx)
