@@ -14,10 +14,7 @@ import ThinkingStream from '@/components/thinking-stream';
 import ToolCallReview from '@/components/tool-call-review';
 import type { TerminalChatProps } from '@/components/terminal-chat/types';
 
-export default function TerminalChat({
-  config,
-  version,
-}: TerminalChatProps): React.ReactElement {
+export default function TerminalChat({ config, version }: TerminalChatProps): React.ReactElement {
   const chatController = useGet(ChatController);
   const { exit } = useApp();
 
@@ -26,14 +23,17 @@ export default function TerminalChat({
   }, [chatController, exit]);
 
   const modelId = config.defaultModel;
-  const displayMessages = chatController.displayMessages.use()!;
-  const loading = chatController.loading.use();
-  const streamingText = chatController.streamingText.use();
-  const streamingReasoning = chatController.streamingReasoning.use();
-  const reasoningVisible = chatController.reasoningVisible.use();
-  const pendingToolCall = chatController.pendingToolCall.use();
-  const overlay = chatController.overlay.use();
-  const inputHistory = chatController.inputHistory.use()!;
+  const displayMessages = chatController.messages.use();
+  const loading = chatController.ui.loading.use();
+  const streamingText = chatController.ui.streamingText.use();
+  const streamingReasoning = chatController.ui.streamingReasoning.use();
+  const reasoningVisible = chatController.ui.reasoningVisible.use();
+  const pendingToolCall = chatController.toolApproval.pendingToolCall.use();
+  const overlay = chatController.ui.overlay.use();
+  const inputHistory = displayMessages
+    .filter((m) => m.role === 'user')
+    .map((m) => m.content)
+    .reverse();
   const isInputActive = chatController.isInputActive;
 
   return (
@@ -48,16 +48,17 @@ export default function TerminalChat({
 
       {loading && streamingText && (
         <Box flexDirection="column" marginBottom={1}>
-          <ChatMessage
-            message={{ id: 'streaming', role: 'assistant', content: streamingText }}
-          />
+          <ChatMessage message={{ id: 'streaming', role: 'assistant', content: streamingText }} />
         </Box>
       )}
 
       {loading && !streamingText && !pendingToolCall && <SpinnerMessage />}
 
       {pendingToolCall && (
-        <ToolCallReview toolCall={pendingToolCall} onDecision={(decision) => chatController.applyToolDecision(decision)} />
+        <ToolCallReview
+          toolCall={pendingToolCall}
+          onDecision={(decision) => chatController.toolApproval.apply(decision)}
+        />
       )}
 
       {overlay === 'model-selector' && (
@@ -65,20 +66,21 @@ export default function TerminalChat({
           config={config}
           currentModelId={modelId}
           onSelect={(newModelId) => chatController.switchModel(newModelId)}
-          onCancel={() => chatController.dismissOverlay()}
+          onCancel={() => chatController.ui.dismissOverlay()}
         />
       )}
 
-      {overlay === 'help' && (
-        <HelpDisplay onDismiss={() => chatController.dismissOverlay()} />
-      )}
+      {overlay === 'help' && <HelpDisplay onDismiss={() => chatController.ui.dismissOverlay()} />}
 
       {overlay === 'config-setup' && (
-        <ConfigSetup config={config} onComplete={(newConfig) => chatController.saveConfig(newConfig)} />
+        <ConfigSetup
+          config={config}
+          onComplete={(newConfig) => chatController.saveConfig(newConfig)}
+        />
       )}
 
       <ChatInput
-        onSubmit={(text) => chatController.sendMessage(text)}
+        onSubmit={(text) => chatController.messages.submit({ content: text })}
         onSlashCommand={(command) => chatController.processSlashCommand(command)}
         isActive={isInputActive}
         history={inputHistory}
