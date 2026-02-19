@@ -20,10 +20,10 @@ const require = createRequire(import.meta.url);`,
   noExternal: [/.*/],
   esbuildOptions(options) {
     options.jsx = 'automatic';
-    options.external = options.external || [];
-    options.external.push('react-devtools-core');
     options.alias = {
       '@': path.join(__dirname, 'src'),
+      // Stub so the bundle does not require react-devtools-core at runtime (Ink only uses it when DEV=true).
+      'react-devtools-core': path.join(__dirname, 'scripts/react-devtools-core-stub.js'),
     };
   },
 });
