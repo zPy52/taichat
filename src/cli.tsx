@@ -1,7 +1,7 @@
 import App from '@/app';
 import { render } from 'ink';
 
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 
 const args = process.argv.slice(2);
 
