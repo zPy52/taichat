@@ -1,5 +1,6 @@
 import { Get, GetRxController } from 'getrx';
 import { spawnSync } from 'node:child_process';
+import { AiProviderService } from '@/services/providers';
 import { SubmoduleChatControllerUi } from '@/controllers/chat/ui';
 import { ConfigController, type AppConfig } from '@/controllers/config';
 import { SubmoduleChatControllerMessages } from '@/controllers/chat/messages';
@@ -22,7 +23,7 @@ export class ChatController extends GetRxController {
 
   public switchModel(newModelId: string): void {
     Get.find(ConfigController)!.setModel(newModelId);
-    this.messages.addAssistant(`Switched to model: ${newModelId}`);
+    this.messages.addAssistant(`Switched to model: ${AiProviderService.label(newModelId)}`);
     this.ui.dismissOverlay();
   }
 
