@@ -44,7 +44,7 @@ export class ChatController extends GetRxController {
         this.ui.overlay.value = 'config-setup';
         break;
       case '/help':
-        this.ui.overlay.value = 'help';
+        this.ui.overlay.value = this.ui.overlay.value === 'help' ? 'none' : 'help';
         break;
       case '/copy': {
         const lastAssistantMessage = [...this.messages.getDisplayMessages()]

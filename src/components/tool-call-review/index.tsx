@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
+import { Const } from '@/const';
 import { Select } from '@inkjs/ui';
-import { COLORS } from '@/utils/colors';
 import { ToolCallArgs } from '@/components/tool-call-review/tool-call-args';
 import type { ReviewDecision, ToolCallReviewProps } from '@/components/tool-call-review/types';
 
@@ -28,15 +28,15 @@ export default function ToolCallReview({
     <Box
       flexDirection="column"
       borderStyle="round"
-      borderColor={COLORS.warning}
+      borderColor={Const.colors.warning}
       paddingX={1}
       marginY={1}
     >
       <Box gap={1} marginBottom={1}>
-        <Text color={COLORS.warning} bold>
+        <Text color={Const.colors.warning} bold>
           {'⚠'}
         </Text>
-        <Text color={COLORS.warning} bold>
+        <Text color={Const.colors.warning} bold>
           Tool Approval Required
         </Text>
       </Box>
@@ -44,7 +44,7 @@ export default function ToolCallReview({
       <Box flexDirection="column" marginLeft={2} marginBottom={1}>
         <Box gap={1}>
           <Text dimColor>tool:</Text>
-          <Text color={COLORS.toolLabel} bold>
+          <Text color={Const.colors.toolLabel} bold>
             {description}
           </Text>
         </Box>

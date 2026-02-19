@@ -60,7 +60,7 @@ export default function TerminalChat({
         .reverse(),
     [displayMessages],
   );
-  const isInputActive = !loading && !pendingToolCall && overlay === 'none';
+  const isInputActive = !loading && !pendingToolCall && (overlay === 'none' || overlay === 'help');
 
   useEffect(() => {
     chatController.messages.bindSetMessages(setMessages);
@@ -107,6 +107,7 @@ export default function TerminalChat({
 
       <ChatInput
         onSubmit={(text) => {
+          chatController.ui.dismissOverlay();
           void sendMessage({ text });
         }}
         onSlashCommand={(command) => chatController.processSlashCommand(command)}

@@ -1,4 +1,4 @@
-export const COLORS = {
+export const colors = {
   accent: '#22d3ee',
   accentDim: '#0891b2',
   success: '#4ade80',

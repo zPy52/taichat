@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { marked } from 'marked';
-import { COLORS } from '@/utils/colors';
+import { Const } from '@/const';
 import { renderMarkdown } from '@/utils/markdown';
 import type { AssistantMessageProps } from '@/components/chat-message/types';
 
@@ -23,8 +23,8 @@ function AssistantMessageComponent({ content }: AssistantMessageProps): React.Re
   return (
     <Box flexDirection="column" marginY={0}>
       <Box gap={1}>
-        <Text bold color={COLORS.assistantLabel}>{'●'}</Text>
-        <Text bold color={COLORS.assistantLabel}>TaiChat</Text>
+        <Text bold color={Const.colors.assistantLabel}>{'●'}</Text>
+        <Text bold color={Const.colors.assistantLabel}>TaiChat</Text>
       </Box>
       <Box marginLeft={2} flexDirection="column">
         {blocks.map((block, index) => (

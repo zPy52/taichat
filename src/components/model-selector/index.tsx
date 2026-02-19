@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
 import { Box, Text } from 'ink';
+import { Const } from '@/const';
 import { Select } from '@inkjs/ui';
-import { COLORS } from '@/utils/colors';
+import React, { useMemo, useState } from 'react';
 import { AiProviderService } from '@/services/providers';
-import type { ModelSelectorProps } from '@/components/model-selector/types';
 import type { ChatProviderName } from '@/controllers/config';
+import type { ModelSelectorProps } from '@/components/model-selector/types';
 
 export default function ModelSelector({
   config,
@@ -49,20 +49,20 @@ export default function ModelSelector({
     <Box
       flexDirection="column"
       borderStyle="round"
-      borderColor={COLORS.accent}
+      borderColor={Const.colors.accent}
       paddingX={1}
       marginY={1}
     >
       <Box marginBottom={1} gap={1}>
-        <Text bold color={COLORS.accent}>Switch model</Text>
+        <Text bold color={Const.colors.accent}>Switch model</Text>
         {step === 'model' && selectedProvider && (
           <>
             <Text dimColor>Provider:</Text>
-            <Text color={COLORS.success}>{selectedProvider}</Text>
+            <Text color={Const.colors.success}>{selectedProvider}</Text>
           </>
         )}
         <Text dimColor>Current:</Text>
-        <Text color={COLORS.success}>{currentModelId}</Text>
+        <Text color={Const.colors.success}>{currentModelId}</Text>
       </Box>
 
       <Select

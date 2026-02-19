@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { COLORS } from '@/utils/colors';
+import { Const } from '@/const';
 import { AiProviderService } from '@/services/providers';
 import type { HeaderProps } from '@/components/header/types';
 
@@ -11,15 +11,15 @@ export default function Header({ modelId, version }: HeaderProps): React.ReactEl
     <Box
       flexDirection="column"
       borderStyle="bold"
-      borderColor={COLORS.accentDim}
+      borderColor={Const.colors.accentDim}
       paddingX={1}
       marginBottom={1}
     >
       <Box gap={1}>
-        <Text bold color={COLORS.accent}>
+        <Text bold color={Const.colors.accent}>
           {'>'}_
         </Text>
-        <Text bold color={COLORS.accent}>
+        <Text bold color={Const.colors.accent}>
           TaiChat
         </Text>
         <Text dimColor>
@@ -27,13 +27,13 @@ export default function Header({ modelId, version }: HeaderProps): React.ReactEl
         </Text>
       </Box>
       <Box gap={1}>
-        <Text color={COLORS.dimText}>{'|'}</Text>
+        <Text color={Const.colors.dimText}>{'|'}</Text>
         <Text dimColor>model:</Text>
-        <Text color={COLORS.success}>{modelLabel}</Text>
+        <Text color={Const.colors.success}>{modelLabel}</Text>
         <Text dimColor>/model to change</Text>
       </Box>
       <Box gap={1}>
-        <Text color={COLORS.dimText}>{'|'}</Text>
+        <Text color={Const.colors.dimText}>{'|'}</Text>
         <Text dimColor>directory:</Text>
         <Text>{process.cwd()}</Text>
       </Box>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { Box, Text } from 'ink';
+import { Const } from '@/const';
+import React, { useState } from 'react';
 import { TextInput, Select } from '@inkjs/ui';
-import { COLORS } from '@/utils/colors';
 import type { AppConfig, ProviderName } from '@/controllers/config';
 import type { ConfigSetupProps, SetupProviderOption, SetupStep } from '@/components/config-setup/types';
 
@@ -25,9 +25,9 @@ export default function ConfigSetup({ config, onComplete }: ConfigSetupProps): R
 
   if (step === 'provider-select') {
     return (
-      <Box flexDirection="column" borderStyle="round" borderColor={COLORS.accent} paddingX={1} marginY={1}>
+      <Box flexDirection="column" borderStyle="round" borderColor={Const.colors.accent} paddingX={1} marginY={1}>
         <Box marginBottom={1}>
-          <Text bold color={COLORS.accent}>API Key Setup</Text>
+          <Text bold color={Const.colors.accent}>API Key Setup</Text>
         </Box>
         <Box marginBottom={1}>
           <Text dimColor>Select a provider to configure (or &quot;Done&quot; to finish):</Text>
@@ -46,7 +46,7 @@ export default function ConfigSetup({ config, onComplete }: ConfigSetupProps): R
         />
         {configuredKeys.length > 0 && (
           <Box marginTop={1}>
-            <Text color={COLORS.success}>
+            <Text color={Const.colors.success}>
               Configured: {configuredKeys.map((provider) => SETUP_PROVIDERS.find((entry) => entry.id === provider)?.label || provider).join(', ')}
             </Text>
           </Box>
@@ -59,16 +59,16 @@ export default function ConfigSetup({ config, onComplete }: ConfigSetupProps): R
     const providerLabel = SETUP_PROVIDERS.find((provider) => provider.id === currentProvider)?.label || currentProvider;
 
     return (
-      <Box flexDirection="column" borderStyle="round" borderColor={COLORS.accent} paddingX={1} marginY={1}>
+      <Box flexDirection="column" borderStyle="round" borderColor={Const.colors.accent} paddingX={1} marginY={1}>
         <Box marginBottom={1} gap={1}>
-          <Text bold color={COLORS.accent}>Enter API key for</Text>
-          <Text bold color={COLORS.success}>{providerLabel}</Text>
+          <Text bold color={Const.colors.accent}>Enter API key for</Text>
+          <Text bold color={Const.colors.success}>{providerLabel}</Text>
         </Box>
         <Box marginBottom={1}>
           <Text dimColor>Paste your key and press Enter (leave empty to skip):</Text>
         </Box>
         <Box gap={1}>
-          <Text color={COLORS.accent}>{'>'}</Text>
+          <Text color={Const.colors.accent}>{'>'}</Text>
           <TextInput
             placeholder="sk-..."
             onSubmit={(value) => {

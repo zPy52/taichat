@@ -1,3 +1,3 @@
 export interface HelpDisplayProps {
-  onDismiss: () => void;
+  onDismiss?: () => void;
 }

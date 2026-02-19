@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { TextInput } from '@inkjs/ui';
-import { COLORS } from '@/utils/colors';
+import { Const } from '@/const';
 import { useInputHistory } from '@/components/chat-input/hooks';
 import type { ChatInputProps } from '@/components/chat-input/types';
 
@@ -22,11 +22,11 @@ export default function ChatInput({
     <Box flexDirection="column">
       <Box
         borderStyle="round"
-        borderColor={isActive ? COLORS.accent : COLORS.border}
+        borderColor={isActive ? Const.colors.accent : Const.colors.border}
         paddingX={1}
       >
         <Box gap={1} width="100%">
-          <Text color={COLORS.accent}>{'>'}</Text>
+          <Text color={Const.colors.accent}>{'>'}</Text>
           {isActive ? (
             <TextInput
               key={inputKey}

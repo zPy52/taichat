@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { COLORS } from '@/utils/colors';
+import { Const } from '@/const';
 import type { ToolResultMessageProps } from '@/components/chat-message/types';
 import { truncate } from '@/components/chat-message/utils';
 
@@ -10,8 +10,8 @@ export function ToolResultMessage({ toolName, content }: ToolResultMessageProps)
   return (
     <Box marginLeft={2} flexDirection="column">
       <Box gap={1}>
-        <Text color={COLORS.success}>{'✓'}</Text>
-        <Text color={COLORS.success} dimColor>
+        <Text color={Const.colors.success}>{'✓'}</Text>
+        <Text color={Const.colors.success} dimColor>
           {toolName} result
         </Text>
       </Box>

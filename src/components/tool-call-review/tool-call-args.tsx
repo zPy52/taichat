@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { COLORS } from '@/utils/colors';
+import { Const } from '@/const';
 import type { ToolCallArgsProps } from '@/components/tool-call-review/types';
 
 export function ToolCallArgs({ toolCall }: ToolCallArgsProps): React.ReactElement | null {
@@ -24,7 +24,7 @@ export function ToolCallArgs({ toolCall }: ToolCallArgsProps): React.ReactElemen
       return (
         <Box gap={1}>
           <Text dimColor>path:</Text>
-          <Text color={COLORS.danger}>{String(args.filePath || '')}</Text>
+          <Text color={Const.colors.danger}>{String(args.filePath || '')}</Text>
         </Box>
       );
     case 'execute_command':
