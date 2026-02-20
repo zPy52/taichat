@@ -21,6 +21,7 @@ export class SubmoduleToolsShell {
     return tool({
       description:
         'Execute a shell command. Use this only when no dedicated tool exists for the task. The user will be asked for approval before execution.',
+      needsApproval: true,
       inputSchema: z.object({
         command: z.string().describe('The shell command to execute'),
         cwd: z.string().optional().describe('Working directory for the command (defaults to current directory)'),

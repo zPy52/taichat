@@ -1,10 +1,9 @@
 import { useGet } from 'getrx';
 import { Box, useApp } from 'ink';
-import React, { useEffect, useMemo } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
 import Header from '@/components/header';
 import ChatInput from '@/components/chat-input';
+import React, { useEffect, useMemo } from 'react';
 import { ChatController } from '@/controllers/chat';
 import ConfigSetup from '@/components/config-setup';
 import HelpDisplay from '@/components/help-display';
@@ -14,6 +13,7 @@ import SpinnerMessage from '@/components/spinner-message';
 import ThinkingStream from '@/components/thinking-stream';
 import ToolCallReview from '@/components/tool-call-review';
 import type { TerminalChatProps } from '@/components/terminal-chat/types';
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
 
 export default function TerminalChat({
   config,
@@ -33,8 +33,9 @@ export default function TerminalChat({
       }),
     [port, token],
   );
-  const { messages, sendMessage, setMessages, status } = useChat({
+  const { messages, sendMessage, setMessages, status, addToolApprovalResponse } = useChat({
     transport,
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
   });
 
   useEffect(() => {
@@ -71,6 +72,10 @@ export default function TerminalChat({
     chatController.messages.sync(messages);
   }, [chatController, messages]);
 
+  useEffect(() => {
+    chatController.toolApproval.sync(messages);
+  }, [chatController, messages]);
+
   return (
     <Box flexDirection="column" width="100%">
       <Header modelId={modelId} version={version} />
@@ -88,7 +93,12 @@ export default function TerminalChat({
       {pendingToolCall && (
         <ToolCallReview
           toolCall={pendingToolCall}
-          onDecision={(decision) => chatController.toolApproval.apply(decision)}
+          onDecision={(decision) => {
+            void addToolApprovalResponse({
+              id: pendingToolCall.approvalId,
+              approved: decision === 'approved',
+            });
+          }}
         />
       )}
 

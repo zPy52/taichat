@@ -9,8 +9,6 @@ export class Tools {
   public static readonly shell = new SubmoduleToolsShell();
   public static readonly utils = new SubmoduleToolsUtils();
 
-  private static readonly DANGEROUS_TOOLS = new Set(['write_file', 'remove_file', 'execute_command']);
-
   public static allTools() {
     return {
       read_file: Tools.files.read(),
@@ -20,9 +18,5 @@ export class Tools {
       execute_command: Tools.shell.execute(),
       search_web: Tools.web.search(),
     };
-  }
-
-  public static isDangerous(toolName: string): boolean {
-    return Tools.DANGEROUS_TOOLS.has(toolName);
   }
 }

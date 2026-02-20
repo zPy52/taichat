@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text } from 'ink';
 import { Tools } from '@/tools';
-import { UserMessage } from '@/components/chat-message/user-message';
+import { UserMessage } from '@/components/chat-message/messages/user';
 import type { ChatMessageProps } from '@/components/chat-message/types';
-import { ToolCallMessage } from '@/components/chat-message/tool-call-message';
-import { AssistantMessage } from '@/components/chat-message/assistant-message';
-import { ToolResultMessage } from '@/components/chat-message/tool-result-message';
+import { ToolCallMessage } from '@/components/chat-message/messages/tools/call';
+import { AssistantMessage } from '@/components/chat-message/messages/assistant';
+import { ToolResultMessage } from '@/components/chat-message/messages/tools/result';
 
 export type { ChatMessageData, MessageRole } from '@/components/chat-message/types';
 
@@ -18,7 +18,13 @@ function ChatMessageComponent({ message }: ChatMessageProps): React.ReactElement
     case 'tool-call':
       return <ToolCallMessage toolName={message.toolName} toolArgs={message.toolArgs} />;
     case 'tool-result':
-      return <ToolResultMessage toolName={message.toolName} content={message.content} />;
+      return (
+        <ToolResultMessage
+          toolName={message.toolName}
+          content={message.content}
+          toolArgs={message.toolArgs}
+        />
+      );
     default:
       return <Text>{message.content}</Text>;
   }

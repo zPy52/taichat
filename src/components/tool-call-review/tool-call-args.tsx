@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { Const } from '@/const';
+import { truncate } from '@/utils/string';
 import type { ToolCallArgsProps } from '@/components/tool-call-review/types';
 
 export function ToolCallArgs({ toolCall }: ToolCallArgsProps): React.ReactElement | null {
@@ -49,12 +50,4 @@ export function ToolCallArgs({ toolCall }: ToolCallArgsProps): React.ReactElemen
         </Box>
       );
   }
-}
-
-function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) {
-    return text;
-  }
-
-  return text.slice(0, maxLength - 3) + '...';
 }

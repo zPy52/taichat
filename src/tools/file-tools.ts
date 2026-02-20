@@ -25,6 +25,7 @@ export class SubmoduleToolsFiles {
     return tool({
       description:
         'Write content to a file, creating it if it does not exist. Prefer this over shell commands for writing files.',
+      needsApproval: true,
       inputSchema: z.object({
         filePath: z.string().describe('Absolute or relative path to write to'),
         content: z.string().describe('The content to write to the file'),
@@ -50,6 +51,7 @@ export class SubmoduleToolsFiles {
   public remove() {
     return tool({
       description: 'Delete a file at the given path. Prefer this tool over shell commands like rm.',
+      needsApproval: true,
       inputSchema: z.object({
         filePath: z.string().describe('Absolute or relative path to the file to delete'),
       }),

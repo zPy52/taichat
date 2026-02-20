@@ -2,11 +2,8 @@ import { Get } from 'getrx';
 import { Const } from '@/const';
 import { Tools } from '@/tools';
 import type { Request, Response } from 'express';
-import { ChatController } from '@/controllers/chat';
 import { ConfigController } from '@/controllers/config';
 import { AiProviderService } from '@/services/providers';
-import type { ToolExecutionOptions } from '@ai-sdk/provider-utils';
-import type { PendingToolCall } from '@/services/chat-server/types';
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 'ai';
 
 interface ChatRequestBody {
@@ -43,7 +40,7 @@ export class SubmoduleChatServerServiceHandler {
       process.env.EXA_API_KEY = exaApiKey;
     }
 
-    const tools = this.getTools();
+    const tools = Tools.allTools();
     const modelMessages = await convertToModelMessages(body.messages, {
       tools,
       ignoreIncompleteToolCalls: true,
@@ -65,45 +62,4 @@ export class SubmoduleChatServerServiceHandler {
     return !!token && this.validateToken(token);
   }
 
-  private getTools(): ReturnType<typeof Tools.allTools> {
-    const tools = Tools.allTools();
-    type ToolEntry = (typeof tools)[keyof typeof tools];
-    const guardedTools: Record<string, ToolEntry> = {} as Record<string, ToolEntry>;
-
-    for (const [toolName, toolDefinition] of Object.entries(tools)) {
-      if (
-        Tools.isDangerous(toolName) &&
-        'execute' in toolDefinition &&
-        typeof toolDefinition.execute === 'function'
-      ) {
-        const originalExecute = toolDefinition.execute as (
-          args: Record<string, unknown>,
-          options: ToolExecutionOptions,
-        ) => Promise<unknown>;
-        const wrappedTool: ToolEntry = {
-          ...toolDefinition,
-          execute: async (args: Record<string, unknown>, options: ToolExecutionOptions) => {
-            const pendingToolCall: PendingToolCall = {
-              toolCallId: options.toolCallId,
-              toolName,
-              args,
-            };
-
-            const approval = await Get.find(ChatController)!.toolApproval.request(pendingToolCall);
-            if (approval === 'denied') {
-              return { error: 'Tool call was denied by the user.' };
-            }
-
-            return await originalExecute(args, options);
-          },
-        } as ToolEntry;
-        guardedTools[toolName] = wrappedTool;
-        continue;
-      }
-
-      guardedTools[toolName] = toolDefinition as ToolEntry;
-    }
-
-    return guardedTools as ReturnType<typeof Tools.allTools>;
-  }
 }

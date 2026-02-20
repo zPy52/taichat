@@ -28,4 +28,5 @@ export interface ToolCallMessageProps {
 export interface ToolResultMessageProps {
   toolName?: string;
   content: string;
+  toolArgs?: Record<string, unknown>;
 }

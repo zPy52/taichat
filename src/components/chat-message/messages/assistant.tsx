@@ -1,7 +1,7 @@
-import React, { memo, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { marked } from 'marked';
 import { Const } from '@/const';
+import React, { memo, useMemo } from 'react';
 import { renderMarkdown } from '@/utils/markdown';
 import type { AssistantMessageProps } from '@/components/chat-message/types';
 
@@ -17,14 +17,18 @@ const MemoizedMarkdownBlock = memo(
 
 MemoizedMarkdownBlock.displayName = 'MemoizedMarkdownBlock';
 
-function AssistantMessageComponent({ content }: AssistantMessageProps): React.ReactElement {
+export function AssistantMessage({ content }: AssistantMessageProps): React.ReactElement {
   const blocks = useMemo(() => parseMarkdownIntoBlocks(content), [content]);
 
   return (
     <Box flexDirection="column" marginY={0}>
       <Box gap={1}>
-        <Text bold color={Const.colors.assistantLabel}>{'●'}</Text>
-        <Text bold color={Const.colors.assistantLabel}>TaiChat</Text>
+        <Text bold color={Const.colors.assistantLabel}>
+          {'●'}
+        </Text>
+        <Text bold color={Const.colors.assistantLabel}>
+          TaiChat
+        </Text>
       </Box>
       <Box marginLeft={2} flexDirection="column">
         {blocks.map((block, index) => (
@@ -34,10 +38,3 @@ function AssistantMessageComponent({ content }: AssistantMessageProps): React.Re
     </Box>
   );
 }
-
-export const AssistantMessage = memo(
-  AssistantMessageComponent,
-  (prevProps, nextProps) => prevProps.content === nextProps.content,
-);
-
-AssistantMessage.displayName = 'AssistantMessage';

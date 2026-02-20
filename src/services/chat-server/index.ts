@@ -4,7 +4,7 @@ import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { SubmoduleChatServerServiceHandler } from '@/services/chat-server/handler';
 
-export type { PendingToolCall, ToolApprovalStatus } from '@/services/chat-server/types';
+export type { PendingToolCall } from '@/services/chat-server/types';
 
 interface ChatServerCredentials {
   port: number;

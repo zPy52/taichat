@@ -2,12 +2,36 @@ import type { ChatMessageData } from '@/components/chat-message';
 import { generateId, type UIMessage } from 'ai';
 
 type ReasoningPart = Extract<UIMessage['parts'][number], { type: 'reasoning' }>;
-type DynamicToolPart = Extract<UIMessage['parts'][number], { type: 'dynamic-tool' }>;
 type SetMessagesFn = (messages: UIMessage[] | ((messages: UIMessage[]) => UIMessage[])) => void;
+type ToolLikePart = Extract<UIMessage['parts'][number], { type: 'dynamic-tool' | `tool-${string}` }>;
 
 export class SubmoduleChatControllerMessages {
   private messages: UIMessage[] = [];
   private setMessages: SetMessagesFn | null = null;
+
+  private isToolPartDone(part: ToolLikePart): boolean {
+    const state = this.getToolState(part);
+    return (
+      state === 'output-available' || state === 'output-error' || state === 'output-denied'
+    );
+  }
+
+  private getToolName(part: ToolLikePart): string {
+    if ('toolName' in part && typeof part.toolName === 'string' && part.toolName.length > 0) {
+      return part.toolName;
+    }
+    if (part.type.startsWith('tool-')) {
+      return part.type.slice('tool-'.length);
+    }
+    return 'tool';
+  }
+
+  private getToolState(part: ToolLikePart): string | undefined {
+    if ('state' in part && typeof part.state === 'string') {
+      return part.state;
+    }
+    return undefined;
+  }
 
   public clear(): void {
     this.messages = [];
@@ -64,41 +88,57 @@ export class SubmoduleChatControllerMessages {
           continue;
         }
 
-        const toolName = part.toolName;
+        const toolName = this.getToolName(part);
+        const toolCallId =
+          'toolCallId' in part && typeof part.toolCallId === 'string'
+            ? part.toolCallId
+            : `${message.id}-tool-${displayMessages.length}`;
         const toolArgs =
-          part.input && typeof part.input === 'object'
+          'input' in part && part.input && typeof part.input === 'object'
             ? (part.input as Record<string, unknown>)
             : {};
-        displayMessages.push({
-          id: `${message.id}-tool-call-${part.toolCallId}`,
-          role: 'tool-call',
-          content: '',
-          toolName,
-          toolArgs,
-        });
-
-        if (part.state === 'output-available') {
-          const content =
-            typeof part.output === 'string' ? part.output : JSON.stringify(part.output, null, 2);
+        const toolState = this.getToolState(part);
+        if (!this.isToolPartDone(part)) {
           displayMessages.push({
-            id: `${message.id}-tool-result-${part.toolCallId}`,
+            id: `${message.id}-tool-call-${toolCallId}`,
+            role: 'tool-call',
+            content: '',
+            toolName,
+            toolArgs,
+          });
+        }
+
+        if (toolState === 'output-available') {
+          const content =
+            'output' in part && typeof part.output === 'string'
+              ? part.output
+              : JSON.stringify(('output' in part ? part.output : null) ?? null, null, 2);
+          displayMessages.push({
+            id: `${message.id}-tool-result-${toolCallId}`,
             role: 'tool-result',
             content,
             toolName,
+            toolArgs,
           });
-        } else if (part.state === 'output-error') {
+        } else if (toolState === 'output-error') {
+          const errorText =
+            'errorText' in part && typeof part.errorText === 'string'
+              ? part.errorText
+              : 'Unknown tool error.';
           displayMessages.push({
-            id: `${message.id}-tool-result-${part.toolCallId}`,
+            id: `${message.id}-tool-result-${toolCallId}`,
             role: 'tool-result',
-            content: `Error: ${part.errorText}`,
+            content: `Error: ${errorText}`,
             toolName,
+            toolArgs,
           });
-        } else if (part.state === 'output-denied') {
+        } else if (toolState === 'output-denied') {
           displayMessages.push({
-            id: `${message.id}-tool-result-${part.toolCallId}`,
+            id: `${message.id}-tool-result-${toolCallId}`,
             role: 'tool-result',
             content: 'Tool call denied.',
             toolName,
+            toolArgs,
           });
         }
       }
@@ -121,8 +161,11 @@ export class SubmoduleChatControllerMessages {
       .join('');
   }
 
-  private isToolLikePart(part: UIMessage['parts'][number]): part is DynamicToolPart {
-    return part.type === 'dynamic-tool';
+  private isToolLikePart(part: UIMessage['parts'][number]): part is ToolLikePart {
+    if (part.type === 'dynamic-tool') {
+      return true;
+    }
+    return typeof part.type === 'string' && part.type.startsWith('tool-');
   }
 
   private isReasoningPart(part: UIMessage['parts'][number]): part is ReasoningPart {
