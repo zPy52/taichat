@@ -1,4 +1,3 @@
-/** Dracula-inspired palette https://draculatheme.com */
 export const colors = {
   accent: '#8be9fd',
   accentDim: '#6272a4',
