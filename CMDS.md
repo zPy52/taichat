@@ -82,10 +82,6 @@ chat
 On first run you’ll be asked to set up API keys. Config is stored at `~/.taichat/config.json`. You can also set keys via env:
 
 - `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `DEEPSEEK_API_KEY`
-- `DEEPINFRA_API_KEY`
-- `KIMI_API_KEY`
 - `EXA_API_KEY` (for web search)
 
 ### In-chat slash commands
