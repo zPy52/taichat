@@ -2,7 +2,7 @@ import App from '@/app';
 import { render } from 'ink';
 import { ChatServerService } from '@/services/chat-server';
 
-const VERSION = '0.1.6';
+const VERSION = '0.1.7';
 
 const args = process.argv.slice(2);
 
