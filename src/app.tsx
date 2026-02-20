@@ -5,6 +5,7 @@ import { Const } from '@/const';
 import ConfigSetup from '@/components/config-setup';
 import TerminalChat from '@/components/terminal-chat';
 import { ConfigController } from '@/controllers/config';
+import { ModelsController } from '@/controllers/models';
 
 interface AppProps {
   version: string;
@@ -13,6 +14,7 @@ interface AppProps {
 }
 
 export default function App({ version, port, token }: AppProps): React.ReactElement {
+  useGet(ModelsController);
   const configController = useGet(ConfigController);
   const config = configController.config.use()!;
   const needsSetup = configController.needsSetup.use();

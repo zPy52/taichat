@@ -33,9 +33,6 @@ You can also set API keys via environment variables:
 
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
-- `DEEPSEEK_API_KEY`
-- `DEEPINFRA_API_KEY`
-- `KIMI_API_KEY`
 - `EXA_API_KEY`
 
 ## Slash Commands

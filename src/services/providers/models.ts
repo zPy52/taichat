@@ -5,7 +5,7 @@ export const PROVIDER_LIST: ProviderInfo[] = [
   { id: 'anthropic', label: 'Anthropic' },
 ];
 
-export const MODEL_LIST: ModelInfo[] = [
+export const FALLBACK_MODEL_LIST: ModelInfo[] = [
   {
     id: 'openai:gpt-5.2',
     label: 'GPT-5.2',
@@ -105,11 +105,45 @@ export const MODEL_LIST: ModelInfo[] = [
     providerOptions: { openai: { reasoningEffort: 'high' } },
   },
   {
+    id: 'anthropic:claude-opus-4-6',
+    label: 'Claude Opus 4.6',
+    provider: 'anthropic',
+    providerLabel: 'Anthropic',
+    sortOrder: 18,
+  },
+  {
+    id: 'anthropic:claude-opus-4-6:thinking-low',
+    baseModelId: 'anthropic:claude-opus-4-6',
+    label: 'Claude Opus 4.6 Thinking Low',
+    provider: 'anthropic',
+    providerLabel: 'Anthropic',
+    sortOrder: 19,
+    providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 8000 } } },
+  },
+  {
+    id: 'anthropic:claude-opus-4-6:thinking-medium',
+    baseModelId: 'anthropic:claude-opus-4-6',
+    label: 'Claude Opus 4.6 Thinking Medium',
+    provider: 'anthropic',
+    providerLabel: 'Anthropic',
+    sortOrder: 20,
+    providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 16000 } } },
+  },
+  {
+    id: 'anthropic:claude-opus-4-6:thinking-high',
+    baseModelId: 'anthropic:claude-opus-4-6',
+    label: 'Claude Opus 4.6 Thinking High',
+    provider: 'anthropic',
+    providerLabel: 'Anthropic',
+    sortOrder: 21,
+    providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 32000 } } },
+  },
+  {
     id: 'anthropic:claude-sonnet-4-6',
     label: 'Claude Sonnet 4.6',
     provider: 'anthropic',
     providerLabel: 'Anthropic',
-    sortOrder: 20,
+    sortOrder: 22,
   },
   {
     id: 'anthropic:claude-sonnet-4-6:thinking-low',
@@ -117,7 +151,7 @@ export const MODEL_LIST: ModelInfo[] = [
     label: 'Claude Sonnet 4.6 Thinking Low',
     provider: 'anthropic',
     providerLabel: 'Anthropic',
-    sortOrder: 21,
+    sortOrder: 23,
     providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 8000 } } },
   },
   {
@@ -126,7 +160,7 @@ export const MODEL_LIST: ModelInfo[] = [
     label: 'Claude Sonnet 4.6 Thinking Medium',
     provider: 'anthropic',
     providerLabel: 'Anthropic',
-    sortOrder: 22,
+    sortOrder: 24,
     providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 16000 } } },
   },
   {
@@ -135,7 +169,7 @@ export const MODEL_LIST: ModelInfo[] = [
     label: 'Claude Sonnet 4.6 Thinking High',
     provider: 'anthropic',
     providerLabel: 'Anthropic',
-    sortOrder: 23,
+    sortOrder: 25,
     providerOptions: { anthropic: { thinking: { type: 'enabled', budgetTokens: 32000 } } },
   },
   {

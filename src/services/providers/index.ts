@@ -1,26 +1,34 @@
 import { createProviderRegistry, defaultSettingsMiddleware, wrapLanguageModel } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
-import { MODEL_LIST, PROVIDER_LIST } from '@/services/providers/models';
+import { Get } from 'getrx';
+import { FALLBACK_MODEL_LIST, PROVIDER_LIST } from '@/services/providers/models';
 import type { LanguageModelV2, ProviderV3 } from '@ai-sdk/provider';
 import type { ModelInfo, ProviderInfo, ProviderModelId } from '@/services/providers/types';
 import { ConfigController, type AppConfig, type ChatProviderName } from '@/controllers/config';
+import { ModelsController } from '@/controllers/models';
 
 export type { ModelInfo, ProviderInfo } from '@/services/providers/types';
-export { MODEL_LIST, PROVIDER_LIST } from '@/services/providers/models';
+export { FALLBACK_MODEL_LIST, PROVIDER_LIST } from '@/services/providers/models';
 
 export class AiProviderService {
+  private static modelList(): ModelInfo[] {
+    return Get.find(ModelsController)?.models.value ?? FALLBACK_MODEL_LIST;
+  }
+
   private static sortModels(models: ModelInfo[]): ModelInfo[] {
     return [...models].sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
   static listAll(): ModelInfo[] {
-    return AiProviderService.sortModels(MODEL_LIST);
+    return AiProviderService.sortModels(AiProviderService.modelList());
   }
 
   static listAvailable(config: AppConfig): ModelInfo[] {
     return AiProviderService.sortModels(
-      MODEL_LIST.filter((model) => !!ConfigController.apiKeys.get(model.provider, config)),
+      AiProviderService.modelList().filter(
+        (model) => !!ConfigController.apiKeys.get(model.provider, config),
+      ),
     );
   }
 
@@ -34,19 +42,19 @@ export class AiProviderService {
 
   static listByProvider(provider: ChatProviderName, config: AppConfig): ModelInfo[] {
     return AiProviderService.sortModels(
-      MODEL_LIST.filter(
+      AiProviderService.modelList().filter(
         (model) => model.provider === provider && !!ConfigController.apiKeys.get(model.provider, config),
       ),
     );
   }
 
   static label(modelId: string): string {
-    const info = MODEL_LIST.find((model) => model.id === modelId);
+    const info = AiProviderService.modelList().find((model) => model.id === modelId);
     return info ? `${info.label} (${info.providerLabel})` : modelId;
   }
 
   static getModel(modelId: string, config: AppConfig): LanguageModelV2 {
-    const model = MODEL_LIST.find((entry) => entry.id === modelId);
+    const model = AiProviderService.modelList().find((entry) => entry.id === modelId);
     if (!model) {
       throw new Error(`Unknown model "${modelId}".`);
     }

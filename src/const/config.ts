@@ -4,6 +4,7 @@ import type { AppConfig, ProviderName } from '@/controllers/config';
 
 export const CONFIG_DIR = path.join(os.homedir(), '.taichat');
 export const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
+export const MODELS_CACHE_FILE = path.join(CONFIG_DIR, 'models.json');
 
 export const DEFAULT_CONFIG: AppConfig = {
   defaultModel: 'openai:gpt-5.2',

@@ -16,15 +16,13 @@ export default function ModelSelector({
   const [selectedProvider, setSelectedProvider] = useState<ChatProviderName | null>(null);
 
   const providerOptions = useMemo(() => {
-    const availableProviders = AiProviderService.listAvailableProviders(config);
-    const providers =
-      availableProviders.length > 0 ? availableProviders : AiProviderService.listProviders();
+    const providers = AiProviderService.listProviders();
 
     return [
       ...providers.map((provider) => ({ label: provider.label, value: provider.id })),
       { label: 'Cancel', value: '__cancel__' },
     ];
-  }, [config]);
+  }, []);
 
   const modelOptions = useMemo(() => {
     if (!selectedProvider) {
@@ -62,7 +60,7 @@ export default function ModelSelector({
           </>
         )}
         <Text dimColor>Current:</Text>
-        <Text color={Const.colors.success}>{currentModelId}</Text>
+        <Text color={Const.colors.success}>{AiProviderService.label(currentModelId)}</Text>
       </Box>
 
       <Select
